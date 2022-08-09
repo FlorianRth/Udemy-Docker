@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+  mongodb:
+    image: "mongo"
+    container_name: mongodb
+    volumes:
+      - mongo-db-data:/data/db
+    #environment:
+    #  - MONGO_INITDB_ROOT_USERNAME=flori
+    #  - MONGO_INITDB_ROOT_PASSWORD=test123
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "80:80"
+    volumes:
+      - backend-logs:/app/logs
+      - ./backend:/app
+      - /app/node_modules
+      - /app/logs
+    depends_on:
+      - mongodb
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  mongo-db-data:
+  backend-logs:
