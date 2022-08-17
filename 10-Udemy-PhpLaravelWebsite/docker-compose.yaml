@@ -35,6 +35,19 @@ services:
     volumes:
       - ./src:/var/www/html
 
-  #npm:
+  artisan:
+    build:
+      context: ./dockerfiles
+      dockerfile: php.dockerfile
+    container_name: artisan
+    volumes:
+      - ./src:/var/www/html
+    entrypoint: ["php", "/var/www/html/artisan"]
 
-  #artisan:
+  npm:
+    image: node:14
+    container_name: npm
+    working_dir: /var/www/html
+    entrypoint: ["npm"]
+    volumes:
+      - ./src:/var/www/html

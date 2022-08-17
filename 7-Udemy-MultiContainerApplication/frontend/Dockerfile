@@ -1,6 +1,8 @@
 FROM node
 
-WORKDIR /app
+ENV INPUT=/app
+
+WORKDIR $INPUT
 
 COPY package.json /app/
 
