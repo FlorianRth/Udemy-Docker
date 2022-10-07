@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: story-app
+spec:
+  selector:
+    matchLabels:
+      app: story-app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: story-app
+    spec:
+      containers:
+        - name: story
+          image: florirthschulz/story-app-image:latest
+          volumeMounts:
+            - mountPath: /app/story
+              name: story-volume
+      volumes:
+        - name: story-volume
+          persistentVolumeClaim:
+            claimName: host-pv-claim
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: story-service
+spec:
+  selector:
+    app: story-app
+  type: LoadBalancer
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 3000
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity:
+    storage: 1Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: host-pv-claim
+spec:
+  volumeName: host-pv
+  resources:
+    requests:
+      storage: 1Gi
+  volumeMode: Filesystem
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
